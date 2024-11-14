@@ -1,0 +1,47 @@
+services:
+  site:
+    image: botmonitor/botmonitor-site:1.0
+    ports:
+      - "8080:80"
+    networks:
+      - "net_botmonitor"
+    environment:
+      - RABBITMQ_DEFAULT_PASS=imzT0vb3D8MOAKtMVN4709Adk
+    volumes:
+      - /u01/swarm/volumes/botMonitor/site/site:/var/www/html
+  db:
+    image: botmonitor/botmonitor-db:1.0
+    #ports:
+    #  - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: kerberos
+      MYSQL_DATABASE: botmonitor
+      MYSQL_USER: botmonitor
+      MYSQL_PASSWORD: kerberos
+    volumes:
+      - bot_db_data:/var/lib/mysql
+    networks:
+      - "net_botmonitor"
+
+  rabbitmq3:
+    image: rabbitmq:3.8-management-alpine
+    volumes:
+      - bot_rabbitMQ:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=imzT0vb3D8MOAKtMVN4709Adk
+    ports:
+      # AMQP protocol port
+      - '5672:5672'
+      # HTTP management UI
+      - '15672:15672'
+    networks:
+      - "net_botmonitor"
+
+networks:
+  net_botmonitor:
+    external: true
+
+volumes:
+  bot_db_data:
+  bot_rabbitMQ:
